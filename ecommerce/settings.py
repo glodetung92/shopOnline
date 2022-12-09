@@ -41,7 +41,14 @@ INSTALLED_APPS = [
 
 	'products.apps.ProductsConfig',
 	'cart.apps.CartConfig',
+	'checkout.apps.CheckoutConfig',
+	'allauth.account',
+	'allauth.socialaccount',
+	'django.contrib.sites',
+	'crispy_forms',
 ]
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -72,6 +79,16 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+	'django.contrib.auth.backends.ModelBackend',
+	'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+EMAIL_BACKENDS = 'django.core.mail.backends.console.EmailBackend'
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
@@ -105,6 +122,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+ACCOUT_FORMS = {
+	'signup': 'accounts.forms.CustomSignUpForm',
+	'login': 'accounts.forms.CustomLoginForm',
+	'reset_password': 'accounts.forms.CustomResetPasswordForm',
+	'reset_password_from_key': 'accounts.forms.CustomResetPasswordKeyForm',
+	'change_password': 'account.forms.CustomChangePasswordForm',
+	'add_email': 'account.forms.CustomAddEmailForm',
+	'set_password': 'accounts.forms.CustomSetPasswordForm',
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -133,3 +160,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/'

@@ -127,3 +127,41 @@ def decreaseCart(request, slug):
 		messages.info(request, "you do not have an active order")
 		return redirect("mainapp:cart-home")
 
+
+
+def increaseCart(request, slug):
+	# Lay item theo slug ( truyen slug nhu la parameter)
+	item = get_object_or_404(Product, slug=slug)
+
+	order_item,created = Cart.objects.get_or_create(
+		item = item,
+		user = request.user,
+	)
+
+	# check xem coi nguoi dung da co order nao ma chua send khong
+	order_qs = Order.objects.filter(user=request.user, ordered=False)
+	# Neu co order chua send roi thi push item trong card do vao order 
+	if order_qs.exists():
+		order = order_qs[0]
+		# check if the order item is in the order
+		if order.orderitems.filter(item__slug=item.slug).exists():
+			order_item.quantity += 1
+			order_item.save()
+			messages.info(request, f"{item.name} quantity has updated.")
+			return redirect('mainapp:cart-home')
+		# Neu item do chua co trong order
+		else:
+			order.orderitems.add(order_item)
+			messages.info(request, "This item was added to your cart.")
+			return redirect('mainapp:cart-home')
+	# Neu chua co no se tao 1 Order moi cho nguoi dung hien tai
+	else:
+		order = Order.objects.create(
+			user=request.user,
+		)
+		# After push order item to new createad order
+		order.orderitems.add(order_item)
+		messages.info(request, "This is was added to your cart.")
+		return redirect('mainapp:home')
+
+
